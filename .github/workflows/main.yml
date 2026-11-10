@@ -205,18 +205,10 @@ jobs:
           - TARGET: powerpc64le-unknown-linux-gnu
             OS: ubuntu-latest
             CC_COMPILER: cross
-            TLS: openssl
 
           - TARGET: powerpc64-unknown-linux-gnu
             OS: ubuntu-latest
             CC_COMPILER: cross
-            TLS: openssl
-
-          # - TARGET: powerpc64le-unknown-linux-gnu
-          #   OS: ubuntu-latest
-          #   CC_COMPILER: cross
-          #   TLS: rustls
-
 
           # ============================================================
           # Android
@@ -225,23 +217,10 @@ jobs:
           - TARGET: aarch64-linux-android
             OS: ubuntu-latest
             CC_COMPILER: cross
-            TLS: openssl
-
-          - TARGET: aarch64-linux-android
-            OS: ubuntu-latest
-            CC_COMPILER: cross
-            TLS: rustls
-
+            
           - TARGET: armv7-linux-androideabi
             OS: ubuntu-latest
             CC_COMPILER: cross
-            TLS: openssl
-
-          - TARGET: armv7-linux-androideabi
-            OS: ubuntu-latest
-            CC_COMPILER: cross
-            TLS: rustls
-
 
           # ============================================================
           # MIPS
@@ -251,24 +230,10 @@ jobs:
             OS: ubuntu-latest
             CC_PKG: gcc-mips64el-linux-gnuabi64 g++-mips64el-linux-gnuabi64 binutils-mips64el-linux-gnuabi64
             CC_COMPILER: cross
-            TLS: openssl
           
           - TARGET: mips64el-unknown-linux-muslabi64
             OS: ubuntu-latest
             CC_COMPILER: cross
-            TLS: openssl
-        
-        # - TARGET: mips64el-unknown-linux-gnuabi64
-          #   OS: ubuntu-latest
-          #   CC_PKG: gcc-mips64el-linux-gnuabi64 g++-mips64el-linux-gnuabi64 binutils-mips64el-linux-gnuabi64
-          #   CC_COMPILER: cross
-          #   TLS: rustls
-
-          # - TARGET: mips64el-unknown-linux-muslabi64
-          #   OS: ubuntu-latest
-          #   CC_COMPILER: cross
-          #   TLS: rustls
-
 
     runs-on: ${{ matrix.OS }}
 
@@ -277,7 +242,6 @@ jobs:
 
     env:
       TARGET: ${{ matrix.TARGET }}
-      TLS: ${{ matrix.TLS }}
       OS: ${{ matrix.OS }}
       CONTAINER: ${{ matrix.CONTAINER }}
       CC_PKG: ${{ matrix.CC_PKG }}
@@ -377,15 +341,14 @@ jobs:
 
           BUILD_ARGS=(build -p "$REDLIB_BIN_NAME" --release --target "$TARGET")
 
-          # OpenSSL/native-tls build
-          if [[ "$TLS" == "openssl" ]]; then
-            BUILD_ARGS+=(--no-default-features --features tls-native)
-          fi
+          # # OpenSSL/native-tls build
+          # if [[ "$TLS" == "openssl" ]]; then
+          #   BUILD_ARGS+=(--no-default-features --features tls-native)
+          # fi
 
           echo "=========================================="
           echo "Building:"
           echo "  Target: $TARGET"
-          echo "  TLS:    $TLS"
           echo "  Args:   ${BUILD_ARGS[*]}"
           echo "=========================================="
 
@@ -410,10 +373,10 @@ jobs:
             OLD_REDLIB_BIN_PATH="$OLD_REDLIB_BIN_DIR/$REDLIB_BIN_NAME.exe"
           fi
 
-          REDLIB_BIN_PATH="${{ runner.temp }}/$REDLIB_BIN_NAME-$REDLIB_VERSION-$TARGET-$TLS"
+          REDLIB_BIN_PATH="${{ runner.temp }}/$REDLIB_BIN_NAME-$REDLIB_VERSION-$TARGET"
 
           if [[ $OS == windows* || $TARGET == *-windows-* ]]; then
-            REDLIB_BIN_PATH="${{ runner.temp }}/$REDLIB_BIN_NAME-$REDLIB_VERSION-$TARGET-$TLS.exe"
+            REDLIB_BIN_PATH="${{ runner.temp }}/$REDLIB_BIN_NAME-$REDLIB_VERSION-$TARGET.exe"
           fi
 
           REDLIB_BIN_HASH_PATH="$REDLIB_BIN_PATH.sha256.txt"
@@ -430,7 +393,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: binary-${{ matrix.TARGET }}-${{ matrix.TLS }}
+          name: binary-${{ matrix.TARGET }}
           path: |
             ${{ env.REDLIB_BIN_PATH }}
             ${{ env.REDLIB_BIN_HASH_PATH }}
