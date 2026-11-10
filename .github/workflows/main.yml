@@ -68,7 +68,7 @@ jobs:
         id: release_version_cargo_get
         uses: nicolaiunrein/cargo-get@master
         with:
-          subcommand: workspace.package.version
+          subcommand: package.version
           options: --entry "$REDLIB_ROOT_DIR/Cargo.toml"
 
       - name: Set REDLIB_VERSION build variable
