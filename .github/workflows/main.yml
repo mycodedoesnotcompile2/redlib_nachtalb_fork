@@ -298,30 +298,30 @@ jobs:
             rustup target add $TARGET
           fi
 
-      - name: Patch stuff in Cargo.toml
-        run: |
-          cd "$REDLIB_ROOT_DIR"
+      # - name: Patch stuff in Cargo.toml
+      #   run: |
+      #     cd "$REDLIB_ROOT_DIR"
 
-          #sed -Ei 's/^([[:space:]]*rustls[[:space:]]*=[[:space:]]*)"([^"]+)"[[:space:]]*$/\1{ version = "\2", features = ["dangerous_configuration"] }/' cli/Cargo.toml
-          #sed -E -i '' 's/^([[:space:]]*rustls[[:space:]]*=[[:space:]]*)"([^"]+)"[[:space:]]*$/\1{ version = "\2", features = ["dangerous_configuration"] }/' cli/Cargo.toml
-          grep -i "rustls" cli/Cargo.toml
+      #     #sed -Ei 's/^([[:space:]]*rustls[[:space:]]*=[[:space:]]*)"([^"]+)"[[:space:]]*$/\1{ version = "\2", features = ["dangerous_configuration"] }/' cli/Cargo.toml
+      #     #sed -E -i '' 's/^([[:space:]]*rustls[[:space:]]*=[[:space:]]*)"([^"]+)"[[:space:]]*$/\1{ version = "\2", features = ["dangerous_configuration"] }/' cli/Cargo.toml
+      #     grep -i "rustls" cli/Cargo.toml
 
-          # Only OpenSSL/native-tls builds need the native-tls vendored patch.
-          if [[ "$TLS" == "openssl" ]] && \
-             [[ $TARGET == *"-musl"* || \
-                $TARGET == "arm"* || \
-                $TARGET == "risc"* || \
-                $TARGET == "mips"* || \
-                $TARGET == "powerpc"* || \
-                $TARGET == *"android" || \
-                $TARGET = i*86-unknown-linux-gnu ]]; then
+      #     # Only OpenSSL/native-tls builds need the native-tls vendored patch.
+      #     if [[ "$TLS" == "openssl" ]] && \
+      #        [[ $TARGET == *"-musl"* || \
+      #           $TARGET == "arm"* || \
+      #           $TARGET == "risc"* || \
+      #           $TARGET == "mips"* || \
+      #           $TARGET == "powerpc"* || \
+      #           $TARGET == *"android" || \
+      #           $TARGET = i*86-unknown-linux-gnu ]]; then
 
-            sed -Ei \
-              -e 's|^native-tls = "([^"]+)"$|native-tls = { version = "\1", features = ["vendored"] }|' \
-              -e 's|^native-tls = \{(.*)\}$|native-tls = {\1, features = ["vendored"]}|' \
-              crates/collector/Cargo.toml
-            grep -R 'vendored' -n .
-          fi
+      #       sed -Ei \
+      #         -e 's|^native-tls = "([^"]+)"$|native-tls = { version = "\1", features = ["vendored"] }|' \
+      #         -e 's|^native-tls = \{(.*)\}$|native-tls = {\1, features = ["vendored"]}|' \
+      #         crates/collector/Cargo.toml
+      #       grep -R 'vendored' -n .
+      #     fi
 
       - name: Patch lto in Cargo.toml for mips
         run: |
